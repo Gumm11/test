@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-def tensorflow_kmeans(data, num_clusters, num_iterations=40, penalty_threshold=0.3, penalty_factor=0.5, tol=1e-4):
+def tensorflow_kmeans(data, num_clusters, num_iterations=30, penalty_threshold=0.3, penalty_factor=0.5, tol=1e-4):
     """
     Custom K-means clustering implementation using TensorFlow with soft penalties for distant points.
 

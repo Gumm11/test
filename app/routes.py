@@ -72,7 +72,6 @@ def cluster_data(data: ClusteringInput):
         # Perform parallel clustering to find the best cluster
         best_clusters, best_labels, best_centroids, best_metrics = parallel_find_best_clusters(
             normalized_data, locations, num_clusters, num_iterations=8
-            # 10 is over, enough, or under?
         )
 
     # Visualize the clustering results
