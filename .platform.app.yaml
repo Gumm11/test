@@ -4,11 +4,12 @@ type: python:3.9
 relationships:
     database: "mysql:mysql"  # Ensure this targets the correct database endpoint
 
+# .platform.app.yaml
 dependencies:
     python:
-        - fastapi
-        - uvicorn
-        - mysqlclient  # MySQL client for Python
+        fastapi: "latest"
+        uvicorn: "latest"
+        mysqlclient: "latest"
 
 build:
     flavor: fastcgi
@@ -19,7 +20,6 @@ web:
     locations:
         "/":
             root: public
-            index: index.html
             allow: true
 
 hooks:
