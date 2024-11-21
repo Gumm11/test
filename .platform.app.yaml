@@ -2,7 +2,8 @@ name: app
 type: python:3.9
 
 relationships:
-    database: "mysql:mysql"  # Ensure this targets the correct database endpoint
+  database: "db:mysql"
+  rediscache: "cache:redis"
 
 # .platform.app.yaml
 dependencies:
