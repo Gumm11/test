@@ -3,9 +3,8 @@ name: app
 type: python:3.9  # Your Python runtime version
 
 dependencies:
-    python:
-        fastapi: "latest"
-        uvicorn: "latest"
+  python3:
+    pipenv: '2023.2.4'
 
 web:
     commands:
