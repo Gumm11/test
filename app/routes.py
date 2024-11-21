@@ -6,13 +6,16 @@ from fastapi import BackgroundTasks
 from app.models import ClusteringInput
 from app.clustering import tensorflow_kmeans
 from app.scheduling import parallel_schedule_clusters, handle_unvisitable
-# from app.utils import visualize_clusters, visualize_routing, generate_schedule_table
+from app.utils import visualize_clusters, visualize_routing, generate_schedule_table
 from app.evaluation import (
     compute_silhouette_score,
     # compute_davies_bouldin_index,
     # compute_intra_cluster_distance,
 )
 from concurrent.futures import ThreadPoolExecutor
+import sys
+
+sys.dont_write_bytecode = True
 
 # Initialize the API router for clustering-related endpoints
 clustering_router = APIRouter()
@@ -68,7 +71,7 @@ def cluster_data(data: ClusteringInput):
     else:
         # Perform parallel clustering to find the best cluster
         best_clusters, best_labels, best_centroids, best_metrics = parallel_find_best_clusters(
-            normalized_data, locations, num_clusters, num_iterations=5
+            normalized_data, locations, num_clusters, num_iterations=8
             # 10 is over, enough, or under?
         )
 
@@ -154,40 +157,6 @@ def cluster_data(data: ClusteringInput):
     }
 
     return response
-
-@clustering_router.post("/cluster_simulation/", summary="Simulate Multiple User Requests")
-def simulate_cluster_requests(data: ClusteringInput, background_tasks: BackgroundTasks):
-    """
-    Simulates 100 user requests to the clustering endpoint and records the runtime.
-    Arguments:
-        data (ClusteringInput): Input data containing location points, number of clusters, and daily start/end times.
-
-    Returns:
-        dict: Total runtime and average time per request.
-    """
-    # Function to process a single clustering request
-    def process_request(input_data: ClusteringInput):
-        # Directly call the cluster_data logic here
-        cluster_data(input_data)
-    
-    # Start the timer
-    start_time = time.time()
-
-    # Simulate 100 requests in parallel
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        results = list(executor.map(lambda _: process_request(data), range(100)))
-
-    # Stop the timer
-    end_time = time.time()
-
-    # Compute total runtime and average time per request
-    total_runtime = end_time - start_time
-    average_runtime = total_runtime / 100
-
-    return {
-        "total_runtime_seconds": total_runtime,
-        "average_runtime_seconds": average_runtime,
-    }
 
 # Do we need this multithreading too? Or is it too much? (For clustering)
 def parallel_find_best_clusters(normalized_data, locations, num_clusters, num_iterations):

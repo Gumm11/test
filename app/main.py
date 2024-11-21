@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from app.routes import clustering_router
 from fastapi.staticfiles import StaticFiles
-import logging
+import sys
 
-logging.basicConfig(level=logging.DEBUG)
+sys.dont_write_bytecode = True
 
 # Initialize FastAPI app
 app = FastAPI()
