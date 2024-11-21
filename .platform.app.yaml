@@ -8,7 +8,7 @@ dependencies:
 
 web:
     commands:
-        start: uvicorn app.main:app --host 0.0.0.0 --port 8000
+        start: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     locations:
         "/":
             root: public
@@ -17,3 +17,6 @@ web:
 hooks:
     build: |
         pip install -r requirements.txt
+
+mounts:
+    "/static": "shared:files/static"
