@@ -1,23 +1,15 @@
-name: 'app'
-type: 'python:3.9'
-
-relationships:
-  database: "db:mysql"
-  rediscache: "cache:redis"
-
 # .platform.app.yaml
+name: app
+type: python:3.9  # Your Python runtime version
+
 dependencies:
     python:
         fastapi: "latest"
         uvicorn: "latest"
-        mysqlclient: "latest"
-
-build:
-    flavor: fastcgi
 
 web:
     commands:
-        start: "pipenv run python app.main.py"
+        start: uvicorn main:app --host 0.0.0.0 --port 8080
     locations:
         "/":
             root: public

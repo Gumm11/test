@@ -1,7 +1,0 @@
-# services.yaml
-database:
-    type: mysql:8.0
-    disk: 1024  # Adjust disk space if needed
-
-cache:
-  type: 'redis:5.0'
