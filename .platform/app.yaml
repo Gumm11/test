@@ -6,6 +6,6 @@ web:
     mounts:
         "/": "shared:files"
 relationships:
-    database: "db:postgresql"
+    database: "mysql:mysql"
 dependencies:
     python: "requirements.txt"
