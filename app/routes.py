@@ -6,7 +6,7 @@ from fastapi import BackgroundTasks
 from app.models import ClusteringInput
 from app.clustering import tensorflow_kmeans
 from app.scheduling import parallel_schedule_clusters, handle_unvisitable
-from app.utils import visualize_clusters, visualize_routing, generate_schedule_table
+# from app.utils import visualize_clusters, visualize_routing, generate_schedule_table
 from app.evaluation import (
     compute_silhouette_score,
     # compute_davies_bouldin_index,

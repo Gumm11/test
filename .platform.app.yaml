@@ -19,6 +19,5 @@ hooks:
         pip install -r requirements.txt
 
 disk: 512
-
 mounts:
     "/static": "shared:files/static"
