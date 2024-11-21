@@ -1,5 +1,5 @@
-name: app
-type: python:3.9
+name: 'app'
+type: 'python:3.9'
 
 relationships:
   database: "db:mysql"
@@ -17,7 +17,7 @@ build:
 
 web:
     commands:
-        start: uvicorn main:app --host 0.0.0.0 --port 8080
+        start: "pipenv run python app.main.py"
     locations:
         "/":
             root: public
