@@ -1,6 +1,6 @@
 # .platform.app.yaml
 name: app
-type: python:3.9  # Your Python runtime version
+type: python:3.9 
 
 dependencies:
   python3:
@@ -17,6 +17,8 @@ web:
 hooks:
     build: |
         pip install -r requirements.txt
+
+disk: 512
 
 mounts:
     "/static": "shared:files/static"
