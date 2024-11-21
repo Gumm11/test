@@ -1,6 +1,6 @@
 # .platform.app.yaml
 name: app
-type: python:3.9 
+type: python:3.12 
 
 dependencies:
   python3:
