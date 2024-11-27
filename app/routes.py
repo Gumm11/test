@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-import time
-from fastapi import BackgroundTasks
+# import time
+import pandas as pd
+import joblib
 from app.models import ClusteringInput
 from app.clustering import tensorflow_kmeans
 from app.scheduling import parallel_schedule_clusters, handle_unvisitable
@@ -34,7 +35,7 @@ def cluster_data(data: ClusteringInput):
         
     Returns a dict containing grouped clusters with schedules and unvisitable locations (response)
     """
-    start_time = time.time()
+    # start_time = time.time()
     
     # Extract coordinates, names, bla bla bla and create a mapping of location names to their details
     coordinates = np.array([loc.coordinates for loc in data.points])
@@ -122,9 +123,9 @@ def cluster_data(data: ClusteringInput):
     #     output_path=routing_plot_path
     # )
     
-    end_time = time.time()
+    # end_time = time.time()
     
-    total_runtime = end_time - start_time
+    # total_runtime = end_time - start_time
 
     # Compile final response
     response = {
@@ -147,7 +148,7 @@ def cluster_data(data: ClusteringInput):
             {"name": loc.name, "reason": "Time constraints prevent scheduling"}
             for loc in final_unvisitable
         ],
-        "total_runtime_seconds": total_runtime,
+        # "total_runtime_seconds": total_runtime,
         # "metrics": best_metrics, 
         # "visualization": {  
         #     "cluster_plot_path": cluster_plot_path,
@@ -234,3 +235,47 @@ def compute_cluster_balance_score(labels, num_clusters):
     cluster_counts = [np.sum(labels == i) for i in range(num_clusters)]
     balance_score = np.var(cluster_counts) / np.mean(cluster_counts)  # Normalize by mean
     return balance_score
+
+# ------------------------------------- HDBSCAN AREA -------------------------------------
+
+# Load pre-trained HDBSCAN model
+def load_model(province: str):
+    if province.lower() == ('jawa timur' or 'east java'):
+        model_path = 'model/jatim.pkl'  
+    elif province.lower() == ('jawa barat' or 'west java'):
+        model_path = 'model/jabar.pkl'  
+    elif province.lower() == 'bali':
+        model_path = 'model/bali.pkl'  
+    else:
+        raise ValueError("Invalid province")
+    
+    # Load the model
+    return joblib.load(model_path)
+
+# Endpoint for generating a recommended schedule using the pre-trained model
+@clustering_router.post("/recommend/")
+async def generate_trip_schedule(input_data: ClusteringInput):
+    
+    clusterer = load_model(input_data.province)
+    
+    # Extracting coordinates from user input
+    user_coords = [(loc.coordinates[0], loc.coordinates[1]) for loc in input_data.points]
+
+    # Convert coordinates to radians (HDBSCAN requires radians for clustering)
+    user_coords_rad = np.radians(user_coords)
+
+    # Predict clusters using the pre-trained HDBSCAN model
+    cluster_labels = clusterer.fit_predict(user_coords_rad)
+
+    # Prepare the response in the specified format
+    grouped_clusters = []
+    for cluster_id in set(cluster_labels):
+        cluster_schedule = [input_data.points[i].name for i in range(len(cluster_labels)) if cluster_labels[i] == cluster_id]
+        grouped_clusters.append({
+            "cluster": int(cluster_id),
+            "schedule": cluster_schedule
+        })
+        
+    recommended_days = len(grouped_clusters)
+        
+    return {"grouped_clusters": grouped_clusters, "final_unvisitable": [], "recommended_days": recommended_days }

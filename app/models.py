@@ -13,6 +13,7 @@ class Location(BaseModel):
 class ClusteringInput(BaseModel):
     points: List[Location]
     num_clusters: int
+    province: Optional[str]
     # Default to 08:00
     daily_start_time: Optional[str] = "08:00"  
     # Default to 20:00
